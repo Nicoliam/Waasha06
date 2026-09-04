@@ -25,6 +25,9 @@
   "references": [
     {
       "path": "./apps/web/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/mobile/tsconfig.app.json"
     }
   ]
 }

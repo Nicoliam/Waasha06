@@ -6,7 +6,16 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "build:web": "ng build --project web",
+    "build:mobile": "ng build --project mobile",
+    "build:backend": "npm --prefix backend run build",
+    "build:all": "npm run build:web && npm run build:mobile && npm run build:backend",
+    "test:backend": "npm --prefix backend test",
+    "db:generate": "npm --prefix backend run prisma:generate",
+    "db:migrate": "npm --prefix backend run prisma:migrate",
+    "db:migrate:status": "npm --prefix backend run prisma:migrate:status",
+    "db:seed": "npm --prefix backend run prisma:seed"
   },
   "private": true,
   "packageManager": "npm@11.13.0",
@@ -17,6 +26,11 @@
     "@angular/forms": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "@capacitor/android": "^8.5.1",
+    "@capacitor/cli": "^8.5.1",
+    "@capacitor/core": "^8.5.1",
+    "@ionic/angular": "^9.0.2",
+    "@prisma/client": "^5.19.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -24,7 +38,9 @@
     "@angular/build": "^21.2.23",
     "@angular/cli": "^21.2.7",
     "@angular/compiler-cli": "^21.2.0",
+    "@ionic/angular-toolkit": "^13.0.0",
     "prettier": "^3.8.1",
+    "prisma": "^5.19.1",
     "typescript": "~5.9.2"
   }
 }

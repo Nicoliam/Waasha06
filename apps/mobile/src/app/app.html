@@ -1,0 +1,14 @@
+<div style="min-height:100dvh; background:#F6F8FA">
+  <div style="max-width:520px; margin:0 auto; background:white; min-height:100dvh; border-left:1px solid #E2E8F0; border-right:1px solid #E2E8F0">
+    <div style="padding:12px 14px; border-bottom:1px solid #E2E8F0; display:flex; justify-content:space-between; align-items:center">
+      <a routerLink="/" style="text-decoration:none"><waasha-logo /></a>
+      <div style="display:flex; gap:10px; font-size:13px; font-weight:600">
+        <a routerLink="/auth/login">Log in</a>
+        <a routerLink="/auth/register">Register</a>
+        <a routerLink="/me">Me</a>
+        <a routerLink="/discovery">Discovery</a>
+      </div>
+    </div>
+    <router-outlet />
+  </div>
+</div>
