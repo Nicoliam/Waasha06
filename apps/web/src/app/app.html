@@ -3,6 +3,7 @@
     <div class="wa-header-inner">
       <a routerLink="/" style="text-decoration:none"><waasha-logo /></a>
       <nav class="wa-nav">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Discover</a>
         <a routerLink="/auth/login" routerLinkActive="active">Log in</a>
         <a routerLink="/auth/register" routerLinkActive="active">Register</a>
         <a routerLink="/me" routerLinkActive="active">Me</a>

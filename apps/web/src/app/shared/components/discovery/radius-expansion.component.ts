@@ -1,12 +1,4 @@
-/**
- * Radius Expansion Component — apps/mobile/src/app/shared/components/radius-expansion/radius-expansion.component.ts
- *
- * Empty-results UX: "No providers within 10 km → Expand to 15 km → Expand to 20 km → Max reached"
- * Renders options from backend-provided config (MarketplaceRadiusConfigService).
- * No hard-coded max enforcement as security — backend validates.
- */
-
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CustomerDiscoveryRadiusKm } from '../../../core/models/discovery-radius.model';
 
@@ -17,41 +9,46 @@ import { CustomerDiscoveryRadiusKm } from '../../../core/models/discovery-radius
   template: `
     <div
       *ngIf="total === 0"
-      class="rounded-xl border border-[#E2E8F0] bg-white p-4 text-center shadow-sm"
+      class="wa-empty"
       role="status"
       aria-live="polite"
     >
-      <p class="text-sm font-semibold text-[#0B1F33]">
+      <p class="wa-empty__title">
         {{ titleForRadius }}
       </p>
-      <p class="mt-1 text-sm text-[#667085]" *ngIf="canExpandTo">
+      <p class="wa-empty__sub" *ngIf="canExpandTo">
         Try expanding your discovery radius.
       </p>
-      <p class="mt-1 text-sm text-[#667085]" *ngIf="!canExpandTo">
-        You've reached the maximum discovery radius ({{ currentRadiusKm }} km). Try changing
-        category or location.
+      <p class="wa-empty__sub" *ngIf="!canExpandTo">
+        You've reached the maximum discovery radius ({{ currentRadiusKm }} km). Try changing category or location.
       </p>
 
       <button
         *ngIf="canExpandTo"
         type="button"
         (click)="expand.emit(canExpandTo)"
-        class="mt-3 inline-flex items-center justify-center rounded-xl bg-[#0B1F33] px-4 py-2.5 text-sm font-bold text-white shadow-sm active:scale-[0.98]"
+        class="wa-btn wa-btn-primary wa-btn--navy wa-empty__cta"
         [attr.aria-label]="'Expand discovery radius to ' + canExpandTo + ' km'"
       >
         Search within {{ canExpandTo }} km
       </button>
 
-      <div *ngIf="canExpandTo" class="mt-2 text-xs text-[#667085]">
+      <div *ngIf="canExpandTo" class="wa-empty__footnote">
         Maximum: {{ maxRadiusKm }} km • Provider coverage also applies
       </div>
     </div>
   `,
+  styles: [`
+    .wa-empty { border: 1px solid var(--waasha-border); background: white; border-radius: var(--waasha-radius); padding: 20px; text-align: center; box-shadow: 0 1px 2px rgba(16,24,40,0.04); }
+    .wa-empty__title { font-size: 14px; font-weight: 800; color: var(--waasha-navy); margin: 0; }
+    .wa-empty__sub { font-size: 13px; color: var(--waasha-muted); margin: 6px 0 0; }
+    .wa-empty__cta { margin-top: 12px; border-radius: 12px; padding: 10px 18px; }
+    .wa-btn--navy { background: var(--waasha-navy); }
+    .wa-empty__footnote { margin-top: 8px; font-size: 11px; color: var(--waasha-muted); }
+  `]
 })
 export class RadiusExpansionComponent {
-  /** Current customer radius (from DiscoveryService). */
   @Input({ required: true }) currentRadiusKm!: CustomerDiscoveryRadiusKm;
-  /** Next allowed radius, or null at max — derived from backend config. */
   @Input() canExpandTo: CustomerDiscoveryRadiusKm | null = null;
   @Input() maxRadiusKm: CustomerDiscoveryRadiusKm = 20;
   @Input() total: number | null = null;
