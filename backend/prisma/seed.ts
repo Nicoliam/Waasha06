@@ -17,8 +17,9 @@ async function main() {
     });
   }
 
-  // Provider tiers
+  // Provider tiers — T1/T2/T3 + STUDENT (verified student level, 16% commission, not ranking boost)
   for (const tier of [
+    { code: 'STUDENT', name: 'Student', sortOrder: 0, description: 'Verified university/college student — requires verification, 16% commission, R500 cash cap' },
     { code: 'T1', name: 'Individual', sortOrder: 1 },
     { code: 'T2', name: 'Team', sortOrder: 2 },
     { code: 'T3', name: 'Business', sortOrder: 3 },
@@ -94,6 +95,55 @@ async function main() {
       settingValue: '3',
       valueType: 'NUMBER',
       description: 'Max images per custom request',
+    },
+    // Phase 1.5 — Tiered commission & cash liability caps (configurable, not hard-coded)
+    {
+      settingKey: 'commission_student_percent',
+      settingValue: '16',
+      valueType: 'NUMBER',
+      description: 'Waasha commission % for verified Student providers (configurable)',
+    },
+    {
+      settingKey: 'commission_t1_percent',
+      settingValue: '25',
+      valueType: 'NUMBER',
+      description: 'Waasha commission % for T1 Individual (configurable)',
+    },
+    {
+      settingKey: 'commission_t2_percent',
+      settingValue: '25',
+      valueType: 'NUMBER',
+      description: 'Waasha commission % for T2 Teams (configurable)',
+    },
+    {
+      settingKey: 'commission_t3_percent',
+      settingValue: '25',
+      valueType: 'NUMBER',
+      description: 'Waasha commission % for T3 Business (configurable)',
+    },
+    {
+      settingKey: 'cash_cap_student',
+      settingValue: '500',
+      valueType: 'NUMBER',
+      description: 'Maximum outstanding Waasha commission owed from cash transactions — Student (ZAR)',
+    },
+    {
+      settingKey: 'cash_cap_t1',
+      settingValue: '1000',
+      valueType: 'NUMBER',
+      description: 'Maximum outstanding Waasha commission owed from cash transactions — T1 (ZAR)',
+    },
+    {
+      settingKey: 'cash_cap_t2',
+      settingValue: '1000',
+      valueType: 'NUMBER',
+      description: 'Maximum outstanding Waasha commission owed from cash transactions — T2 (ZAR)',
+    },
+    {
+      settingKey: 'cash_cap_t3',
+      settingValue: '5000',
+      valueType: 'NUMBER',
+      description: 'Maximum outstanding Waasha commission owed from cash transactions — T3 Business (ZAR)',
     },
   ];
 

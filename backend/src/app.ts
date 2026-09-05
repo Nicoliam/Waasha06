@@ -7,6 +7,7 @@ import marketplaceRoutes from './modules/marketplace/marketplace.routes';
 import providerRoutes from './modules/provider/provider.routes';
 import authRoutes from './modules/auth/auth.routes';
 import customerRoutes from './modules/customer/customer.routes';
+import financeRoutes from './modules/finance/finance.routes';
 import { errorHandler, notFound } from './middleware/error';
 
 export const app = express();
@@ -38,6 +39,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/customers', customerRoutes);
 app.use('/api/v1/marketplace', marketplaceRoutes);
 app.use('/api/v1/providers', providerRoutes);
+app.use('/api/v1/finance', financeRoutes);
 
 // 404 + error
 app.use(notFound);

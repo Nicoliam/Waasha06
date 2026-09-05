@@ -163,7 +163,7 @@ Do not introduce additional core launch categories without an explicit product d
 
 # 6. Provider Model
 
-Waasha supports three provider capability tiers:
+Waasha supports three provider capability tiers plus verified Student status:
 
 ### T1 — Individual
 
@@ -187,7 +187,11 @@ A business that can manage:
 
 T3 can support all five Waasha categories.
 
-Provider tiers must not automatically determine marketplace ranking.
+### Student — Verified
+
+University/college students with verified status (requires `studentVerificationStatus === VERIFIED`, not self-select). Student commission is 16% (vs 25% for T1/T2/T3) and cash cap is R500. See `docs/WAASHA_FINANCIAL_ARCHITECTURE_PHASE_1_5.md`.
+
+Provider tiers and Student status must not automatically determine marketplace ranking.
 
 ---
 
@@ -270,10 +274,22 @@ Paystack must remain behind a payment abstraction/adapter rather than being hard
 
 Never hard-code the commission rate into business logic.
 
-Current platform commission:
+Current platform commission (tiered, configurable via `admin_settings` — see `docs/WAASHA_FINANCIAL_ARCHITECTURE_PHASE_1_5.md`):
 
 ```text
-25%
+Student (verified): 16%
+T1 Individual: 25%
+T2 Teams: 25%
+T3 Business: 25%
+```
+
+Maximum outstanding Waasha commission owed from cash transactions (provider cash liability caps, configurable):
+
+```text
+Student: R500
+T1: R1,000
+T2: R1,000
+T3: R5,000
 ```
 
 It must remain configurable.

@@ -123,6 +123,10 @@ model ProviderProfile {
   verificationStatus     VerificationStatus @default(UNVERIFIED) @map("verification_status")
   // Radius vertical slice — service coverage
   coverageRadiusKm       Int                @default(10) @map("coverage_radius_km")
+  // Phase 1.5 — Cash acceptance & Student verification (financial architecture)
+  acceptCash             Boolean            @default(true) @map("accept_cash")
+  isStudent              Boolean            @default(false) @map("is_student")
+  studentVerificationStatus VerificationStatus @default(UNVERIFIED) @map("student_verification_status")
   status                 ProviderStatus     @default(ACTIVE)
   createdAt              DateTime           @default(now()) @map("created_at")
   updatedAt              DateTime           @updatedAt @map("updated_at")
@@ -134,12 +138,16 @@ model ProviderProfile {
   services  Service[]         // provider-owned services (provider_id)
   bookings  Booking[]         @relation("BookingProvider")
   assignedBookings Booking[]  @relation("BookingAssignedProvider")
+  cashAccount ProviderCashAccount?
+  cashLedgerEntries CashLedgerEntry[]
 
   @@map("provider_profiles")
   @@index([tierId])
   @@index([status])
   @@index([verificationStatus])
   @@index([coverageRadiusKm])
+  @@index([acceptCash])
+  @@index([isStudent])
 }
 
 enum ProviderType {
@@ -342,6 +350,7 @@ model Business {
   description       String?  @db.Text
   status            String   @default("ACTIVE")
   verificationStatus String  @default("UNVERIFIED") @map("verification_status")
+  acceptCash        Boolean  @default(true) @map("accept_cash")
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
   deletedAt         DateTime? @map("deleted_at")
@@ -351,6 +360,7 @@ model Business {
 
   @@map("businesses")
   @@index([ownerProviderId])
+  @@index([acceptCash])
 }
 
 model BusinessUnit {
@@ -363,6 +373,7 @@ model BusinessUnit {
   status            String   @default("ACTIVE")
   // coverage for business unit as well — used for marketplace
   coverageRadiusKm  Int      @default(10) @map("coverage_radius_km")
+  acceptCash        Boolean  @default(true) @map("accept_cash")
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
   deletedAt         DateTime? @map("deleted_at")
@@ -375,6 +386,7 @@ model BusinessUnit {
   @@map("business_units")
   @@index([businessId])
   @@index([coverageRadiusKm])
+  @@index([acceptCash])
 }
 
 model BusinessUnitCategory {
@@ -473,6 +485,7 @@ model Booking {
   location         BookingLocation?
   payment          Payment?
   review           Review?
+  cashLedgerEntry  CashLedgerEntry?
 
   @@map("bookings")
   @@index([customerId])
@@ -550,6 +563,8 @@ model Payment {
   gateway          String   @default("paystack") // paystack, manual_cash, manual_eft
   method           String   // waasha_payment, cash, eft
   status           String   @default("PENDING")
+  commissionRate   Decimal? @db.Decimal(5,2) @map("commission_rate")
+  commissionAmount Decimal? @db.Decimal(12,2) @map("commission_amount")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
 
@@ -577,6 +592,49 @@ model Review {
 
   @@map("reviews")
   @@index([providerId])
+}
+
+// ── Cash Settlement Ledger (Phase 1.5) ────────────────────────
+
+model ProviderCashAccount {
+  id                    String   @id @default(cuid())
+  providerId            String   @unique @map("provider_id")
+  outstandingCommission Decimal  @default(0) @db.Decimal(12,2) @map("outstanding_commission")
+  totalCashGross        Decimal  @default(0) @db.Decimal(12,2) @map("total_cash_gross")
+  totalCashCommission   Decimal  @default(0) @db.Decimal(12,2) @map("total_cash_commission")
+  totalSettled          Decimal  @default(0) @db.Decimal(12,2) @map("total_settled")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  provider ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@map("provider_cash_accounts")
+  @@index([providerId])
+}
+
+model CashLedgerEntry {
+  id               String   @id @default(cuid())
+  providerId       String   @map("provider_id")
+  bookingId        String?  @unique @map("booking_id")
+  grossAmount      Decimal  @db.Decimal(12,2) @map("gross_amount")
+  paymentMethod    String   @map("payment_method")
+  commissionRate   Decimal  @db.Decimal(5,2) @map("commission_rate")
+  commissionAmount Decimal  @db.Decimal(12,2) @map("commission_amount")
+  type             String   @map("type") // ACCRUAL, SETTLEMENT, REVERSAL, ADJUSTMENT
+  currency         String   @default("ZAR") @map("currency")
+  idempotencyKey   String?  @unique @map("idempotency_key")
+  createdAt        DateTime @default(now()) @map("created_at")
+  metadata         Json?    @map("metadata")
+
+  provider ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  booking  Booking?        @relation(fields: [bookingId], references: [id])
+
+  @@map("cash_ledger_entries")
+  @@index([providerId])
+  @@index([bookingId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([idempotencyKey])
 }
 
 // ── Admin / Configuration ───────────────────────────────────────
